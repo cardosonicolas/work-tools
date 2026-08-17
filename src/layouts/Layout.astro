@@ -1,4 +1,6 @@
 ---
+import { ClientRouter } from 'astro:transitions';
+
 interface Props {
 	title?: string;
 }
@@ -14,6 +16,7 @@ const { title = 'Work Tools · Cierre diario' } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="icon" href="/favicon.ico" />
 		<meta name="generator" content={Astro.generator} />
+		<ClientRouter />
 		<title>{title}</title>
 	</head>
 	<body>
