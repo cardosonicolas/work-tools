@@ -1,0 +1,57 @@
+---
+import Layout from './Layout.astro';
+import ToolNavigation from '../components/ToolNavigation.astro';
+
+interface Props {
+  title?: string;
+  activeTool: 'cierre' | 'precios';
+  compactMobileHero?: boolean;
+}
+
+const {
+  title = 'Work Tools · Cierre diario',
+  activeTool,
+  compactMobileHero = false,
+} = Astro.props;
+
+const headerClass = compactMobileHero
+  ? 'mb-4 flex items-center justify-between gap-4 sm:mb-10'
+  : 'mb-10 flex items-center justify-between gap-4';
+
+const heroClass = compactMobileHero
+  ? 'mb-4 hidden max-w-2xl md:mb-8 md:block'
+  : 'mb-8 max-w-2xl';
+
+---
+
+<Layout title={title}>
+  <main class="min-h-screen bg-[#f3f1eb] text-stone-900">
+    <div class="mx-auto max-w-7xl px-4 py-5 sm:px-8 sm:py-8">
+      <header class={headerClass}>
+        <a href="/" class="flex items-center gap-3" aria-label="Work Tools, inicio">
+          <span class="grid size-9 place-items-center rounded-xl bg-stone-950 font-display font-bold text-amber-300 shadow-lg shadow-stone-900/10">W</span>
+          <span class="font-display text-lg font-bold tracking-tight">work<span class="text-amber-700">/</span>tools</span>
+        </a>
+        <div class="hidden items-center gap-2 text-xs font-bold uppercase tracking-[0.18em] text-stone-400 sm:flex">
+          <span class="size-2 rounded-full bg-emerald-500"></span> Local · sin conexión
+        </div>
+      </header>
+
+      <div class={heroClass}>
+        <p class="eyebrow">Panel de trabajo</p>
+        <h1 class="mt-3 font-display text-4xl font-semibold leading-tight tracking-[-0.04em] text-stone-950 sm:text-6xl">
+          Menos cuentas.<br /><span class="text-amber-700">Más control.</span>
+        </h1>
+        <p class="mt-5 max-w-lg text-base leading-7 text-stone-600">Herramientas simples para resolver los números del día sin perder tiempo.</p>
+      </div>
+
+      <ToolNavigation active={activeTool} />
+      <slot />
+
+      <footer class="mt-8 flex justify-between text-xs font-medium text-stone-400">
+        <span>Work Tools</span>
+        <span>Todos los cálculos viven en tu dispositivo.</span>
+      </footer>
+    </div>
+  </main>
+</Layout>

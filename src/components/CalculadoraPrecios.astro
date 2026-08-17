@@ -1,0 +1,228 @@
+<section
+  class="price-tool grid gap-4 sm:gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1.1fr)]"
+  aria-labelledby="precios-heading"
+>
+  <div class="panel self-start p-5 sm:p-7">
+    <div class="price-form-header mb-7 flex items-start justify-between gap-4">
+      <div>
+        <p class="eyebrow">Carga de datos</p>
+        <h2
+          id="precios-heading"
+          class="mt-2 font-display text-1xl font-semibold tracking-tight text-stone-950">
+          Calculadora de precios
+        </h2>
+      </div><span
+        class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-900"
+        >ARS</span>
+    </div>
+    <form id="precios-form" class="price-form space-y-5" novalidate>
+      <label class="field"
+        ><span>Precio de costo</span><input
+          id="precio-costo"
+          name="precioCosto"
+          type="number"
+          min="0.01"
+          step="0.01"
+          inputmode="decimal"
+          autocomplete="off"
+          placeholder="0"
+          required
+        /></label
+      >
+      <div id="unidades-wrap" class="hidden">
+        <label class="field"
+          ><span>Cantidad de unidades</span><input
+            id="unidades"
+            name="unidades"
+            type="number"
+            min="1"
+            step="1"
+            inputmode="numeric"
+            autocomplete="off"
+            placeholder="Ej. 24"
+          /></label>
+      </div>
+      <div class="price-options flex">
+        <fieldset class="price-choice-fieldset space-y-2">
+          <legend class="field-label">Bulto</legend><div class="choice-grid">
+            <label class="choice"
+              ><input type="radio" name="esBulto" value="no" checked /><span
+                >No</span
+              ></label
+            ><label class="choice"
+              ><input type="radio" name="esBulto" value="si" /><span>Sí</span
+              ></label>
+          </div>
+        </fieldset>
+        <fieldset class="price-choice-fieldset space-y-2">
+          <legend class="field-label">IVA incluido</legend><div
+            class="choice-grid"
+          >
+            <label class="choice"
+              ><input type="radio" name="incluyeIva" value="si" checked /><span
+                >Sí</span
+              ></label
+            ><label class="choice"
+              ><input type="radio" name="incluyeIva" value="no" /><span>No</span
+              ></label>
+          </div>
+        </fieldset>
+      </div>
+      <p
+        id="price-error"
+        class="hidden text-sm font-medium text-red-700"
+        role="alert"
+      >
+      </p>
+      <div class="price-submit-actions flex flex-col gap-3 pt-2">
+        <button class="button-primary" type="submit"
+          >Calcular <span aria-hidden="true">↗</span></button>
+      </div>
+    </form>
+  </div>
+  <div
+    class="panel price-results-panel overflow-hidden p-5 sm:p-7"
+    aria-live="polite"
+  >
+    <div
+      class="price-results-header mb-6 flex items-end justify-between gap-4 border-b border-stone-200 pb-5"
+    >
+      <div>
+        <p class="eyebrow">Precios sugeridos</p><h2
+          class="mt-2 font-display text-1xl font-semibold text-stone-950"
+        >
+          Resultados
+        </h2>
+      </div><p
+        class="text-right text-xs font-semibold uppercase tracking-widest text-stone-400"
+      >
+        Valores en<br />pesos argentinos
+      </p>
+    </div>
+    <div
+      id="price-empty-state"
+      class="price-empty-state flex min-h-80 flex-col items-center justify-center rounded-2xl border border-dashed border-stone-300 bg-stone-50 px-6 text-center"
+    >
+      <div
+        class="mb-4 grid size-12 place-items-center rounded-full bg-amber-100 font-display text-xl font-bold text-amber-900"
+      >
+        $
+      </div><p class="font-semibold text-stone-800">
+        Los precios aparecen acá
+      </p><p class="mt-1 max-w-xs text-sm leading-6 text-stone-500">
+        Ingresá un costo para calcular tus precios de venta.
+      </p>
+    </div>
+    <div id="price-results" class="price-results hidden">
+      <div class="price-results-grid">
+         <div class="result-highlight price-result">
+          <div>
+            <p
+              class="text-xs font-bold uppercase tracking-[0.18em] text-amber-900/70"
+            >
+              Venta en kiosco
+            </p><p
+              class="mt-1 font-display text-xl font-semibold text-stone-950"
+            >
+              Precio público
+            </p><p class="mt-1 text-sm text-stone-600">
+              Real: <span data-price-result="precioPublicoReal"></span>
+            </p>
+          </div><strong data-price-result="precioPublicoSugerido"></strong>
+        </div>
+         <div class="result-highlight price-result pedidos-result">
+          <div>
+            <p
+              class="text-xs font-bold uppercase tracking-[0.18em] text-amber-900/70"
+            >
+              Venta online
+            </p><p
+              class="mt-1 font-display text-xl font-semibold text-stone-950"
+            >
+              PedidosYa
+            </p><p class="mt-1 text-sm text-stone-600">
+              Real: <span data-price-result="precioPedidosYaReal"></span>
+            </p>
+          </div><strong data-price-result="precioPedidosYaSugerido"></strong>
+        </div>
+      </div>
+      <details class="price-details" open>
+        <summary>Ver detalle del cálculo</summary><dl>
+          <div class="result-row">
+            <dt>Costo individual</dt><dd data-price-result="costoIndividual">
+            </dd>
+          </div><div class="result-row">
+            <dt>Costo con IVA</dt><dd data-price-result="costoConIva"></dd>
+          </div>
+        </dl>
+      </details>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { calcularPrecio } from "../utils/calculadoraPrecios";
+  import { formatearPesosExactos } from "../utils/currency";
+  import { parsearNumero } from "../utils/number";
+
+  const form = document.querySelector<HTMLFormElement>("#precios-form");
+  const unitsWrap = document.querySelector<HTMLElement>("#unidades-wrap");
+  const unitsInput = document.querySelector<HTMLInputElement>("#unidades");
+  const results = document.querySelector<HTMLElement>("#price-results");
+  const emptyState = document.querySelector<HTMLElement>("#price-empty-state");
+  const error = document.querySelector<HTMLElement>("#price-error");
+  const details = document.querySelector<HTMLDetailsElement>(".price-details");
+
+  if (window.matchMedia("(max-width: 639px)").matches && details)
+    details.open = false;
+
+  document
+    .querySelectorAll<HTMLInputElement>('input[name="esBulto"]')
+    .forEach((radio) =>
+      radio.addEventListener("change", () => {
+        const isBulk = radio.checked && radio.value === "si";
+        unitsWrap?.classList.toggle("hidden", !isBulk);
+        if (!isBulk) unitsInput!.value = "";
+      }),
+    );
+
+  form?.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const data = new FormData(form);
+    const precioCosto = parsearNumero(data.get("precioCosto"));
+    const esBulto = data.get("esBulto") === "si";
+    const incluyeIva = data.get("incluyeIva") === "si";
+    const unidades = parsearNumero(data.get("unidades"));
+    let message = "";
+    if (!Number.isFinite(precioCosto) || precioCosto <= 0)
+      message = "Ingresá un precio de costo válido.";
+    else if (
+      esBulto &&
+      (!Number.isFinite(unidades) ||
+        unidades <= 0 ||
+        !Number.isInteger(unidades))
+    )
+      message = "Ingresá una cantidad de unidades válida.";
+    if (message) {
+      error!.textContent = message;
+      error?.classList.remove("hidden");
+      return;
+    }
+    error?.classList.add("hidden");
+    const calculated = calcularPrecio({
+      precioCosto,
+      esBulto,
+      unidades,
+      incluyeIva,
+    });
+    Object.entries(calculated).forEach(([key, value]) => {
+      const target = document.querySelector<HTMLElement>(
+        `[data-price-result="${key}"]`,
+      );
+      if (target)
+        target.textContent = formatearPesosExactos(value);
+    });
+    emptyState?.classList.add("hidden");
+    results?.classList.remove("hidden");
+  });
+</script>

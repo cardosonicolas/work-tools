@@ -1,0 +1,53 @@
+<section class="grid gap-6 lg:grid-cols-[minmax(0,0.9fr)_minmax(420px,1.1fr)]" aria-labelledby="cierre-heading">
+  <div class="panel self-start p-5 sm:p-7">
+    <div class="mb-7 flex items-start justify-between gap-4"><div><p class="eyebrow">Carga de datos</p><h2 id="cierre-heading" class="mt-2 font-display text-3xl font-semibold tracking-tight text-stone-950">Cierre diario</h2></div><span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-900">ARS</span></div>
+    <form id="cierre-form" class="space-y-5" novalidate>
+      <div class="grid gap-4 sm:grid-cols-2">
+        <label class="field"><span>Efectivo</span><input name="efectivo" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
+        <label class="field"><span>PedidosYa</span><input name="pedidosYa" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
+        <label class="field"><span>Débito</span><input name="debito" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
+        <label class="field"><span>Cigarrillos</span><input name="cigarrillos" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
+        <label class="field"><span>Cargas</span><input name="cargas" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
+        <label class="field"><span>Horas <small>monto trabajado</small></span><input name="horas" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
+      </div>
+      <p id="form-error" class="hidden text-sm font-medium text-red-700" role="alert">Ingresá importes válidos en todos los campos.</p>
+      <div class="flex flex-col gap-3 pt-2 sm:flex-row"><button class="button-primary" type="submit">Calcular <span aria-hidden="true">↗</span></button><button class="button-secondary" id="clear-button" type="button">Limpiar</button></div>
+    </form>
+  </div>
+  <div class="panel overflow-hidden p-5 sm:p-7" aria-live="polite">
+    <div class="mb-6 flex items-end justify-between gap-4 border-b border-stone-200 pb-5"><div><p class="eyebrow">Desglose del cierre</p><h2 class="mt-2 font-display text-2xl font-semibold text-stone-950">Resultados</h2></div><p class="text-right text-xs font-semibold uppercase tracking-widest text-stone-400">Sin redondeos<br />internos</p></div>
+    <div id="empty-state" class="flex min-h-80 flex-col items-center justify-center rounded-2xl border border-dashed border-stone-300 bg-stone-50 px-6 text-center"><div class="mb-4 grid size-12 place-items-center rounded-full bg-amber-100 font-display text-xl font-bold text-amber-900">=</div><p class="font-semibold text-stone-800">Los resultados aparecen acá</p><p class="mt-1 max-w-xs text-sm leading-6 text-stone-500">Cargá los seis importes y calculá el cierre del día.</p></div>
+    <div id="results" class="hidden">
+       <div class="result-group"><p class="result-group-title">Resultados del cierre</p><dl class="grid gap-x-8 sm:grid-cols-2"><div class="result-row"><dt>T</dt><dd data-result="total"></dd></div><div class="result-row"><dt>%15</dt><dd data-result="baseCalculo"></dd></div><div class="result-row"><dt>Proveedores</dt><dd data-result="proveedores"></dd></div><div class="result-row"><dt>Gcia Ale</dt><dd data-result="gananciaAle"></dd></div><div class="result-row"><dt>(-DÉBITO)</dt><dd data-result="debitoDescontar"></dd></div><div class="result-row"><dt>Horas</dt><dd data-result="horas"></dd></div></dl><div class="result-highlight net-result mt-5"><div><p class="text-xs font-bold uppercase tracking-[0.18em] text-amber-900/70">Resultado principal</p><p class="mt-1 font-display text-xl font-semibold text-stone-950">Gcia Neta Ale</p></div><strong data-result="gananciaNetaAle"></strong></div></div>
+       <div class="result-group"><p class="result-group-title">Cigarrillos / Kiosco</p><dl class="grid gap-x-8 sm:grid-cols-2"><div class="result-row"><dt>Recompra Cigarrillos</dt><dd data-result="recompraCigarrillos"></dd></div><div class="result-row"><dt>Ganancia Cigarrillos</dt><dd data-result="gananciaCigarrillos"></dd></div></dl><div class="result-highlight kiosk-result mt-5"><div><p class="text-xs font-bold uppercase tracking-[0.18em] text-amber-900/70">Resultado kiosco</p><p class="mt-1 font-display text-xl font-semibold text-stone-950">Ganancia Kiosco</p></div><strong data-result="gananciaKiosco"></strong></div></div>
+    </div>
+  </div>
+</section>
+
+<script>
+  import { calcularCierreDiario } from '../utils/cierreDiario';
+  import { formatearPesos } from '../utils/currency';
+  import { parsearNumero } from '../utils/number';
+
+  const form = document.querySelector<HTMLFormElement>('#cierre-form');
+  const results = document.querySelector<HTMLElement>('#results');
+  const emptyState = document.querySelector<HTMLElement>('#empty-state');
+  const error = document.querySelector<HTMLElement>('#form-error');
+  const clearButton = document.querySelector<HTMLButtonElement>('#clear-button');
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const data = new FormData(form);
+    const names = ['efectivo', 'pedidosYa', 'debito', 'cigarrillos', 'cargas', 'horas'] as const;
+    const values = Object.fromEntries(names.map((name) => [name, parsearNumero(data.get(name))])) as Record<(typeof names)[number], number>;
+    if (names.some((name) => !Number.isFinite(values[name]) || values[name] < 0)) { error?.classList.remove('hidden'); return; }
+    error?.classList.add('hidden');
+    const calculated = calcularCierreDiario(values);
+    Object.entries(calculated).forEach(([key, value]) => {
+      const target = document.querySelector<HTMLElement>(`[data-result="${key}"]`);
+      if (target) target.textContent = formatearPesos(value);
+    });
+    emptyState?.classList.add('hidden'); results?.classList.remove('hidden');
+  });
+  clearButton?.addEventListener('click', () => { form?.reset(); error?.classList.add('hidden'); results?.classList.add('hidden'); emptyState?.classList.remove('hidden'); form?.querySelector<HTMLInputElement>('input')?.focus(); });
+</script>
