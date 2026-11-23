@@ -36,6 +36,8 @@ Each tool is split into the same layers:
 
 Layout chain: `Layout.astro` (html shell, includes `<ClientRouter />` for client-side navigation and imports `src/styles/global.css`) → `ToolLayout.astro` (header, `ToolNavigation`, footer). Adding a tool means extending the `activeTool` / `active` union (currently just `'cierre'`) in both `ToolLayout.astro` and `ToolNavigation.astro` and adding a nav link.
 
+PDF export: "Generar PDF" opens an HTML preview `<dialog>` rendered from `construirBloquesCierre` (`src/utils/pdfCierre.ts`), the same row content the PDF uses, so preview and file can't drift. "Descargar PDF" calls `descargarPdfCierre`, which loads jsPDF (~400 KB) with a dynamic `import()` to keep it out of the initial bundle — keep it that way. `astro.config.mjs` lists jspdf in `optimizeDeps.include`; without it the dev server discovers the dep on first click and reloads the page, wiping the form.
+
 Rounding: Cierre diario computes without internal rounding; only display rounds, via `formatearPesos` → `redondearACentenas` (ceil to the next hundred, including negatives). Exception: `recompraCigarrillos` is rounded inside the calculation.
 
 Since `ClientRouter` is enabled, Astro bundled `<script>`s run once per full page load rather than on every client-side navigation, so component scripts bind their DOM listeners inside `document.addEventListener('astro:page-load', …)`.
