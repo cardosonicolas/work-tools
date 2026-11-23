@@ -8,7 +8,7 @@
         <p class="eyebrow">Carga de datos</p>
         <h2
           id="precios-heading"
-          class="mt-2 font-display text-1xl font-semibold tracking-tight text-stone-950">
+          class="mt-2 font-display font-semibold tracking-tight text-stone-950">
           Calculadora de precios
         </h2>
       </div><span
@@ -89,7 +89,7 @@
     >
       <div>
         <p class="eyebrow">Precios sugeridos</p><h2
-          class="mt-2 font-display text-1xl font-semibold text-stone-950"
+          class="mt-2 font-display font-semibold text-stone-950"
         >
           Resultados
         </h2>
@@ -165,7 +165,9 @@
   import { formatearPesosExactos } from "../utils/currency";
   import { parsearNumero } from "../utils/number";
 
+  document.addEventListener("astro:page-load", () => {
   const form = document.querySelector<HTMLFormElement>("#precios-form");
+  if (!form) return;
   const unitsWrap = document.querySelector<HTMLElement>("#unidades-wrap");
   const unitsInput = document.querySelector<HTMLInputElement>("#unidades");
   const results = document.querySelector<HTMLElement>("#price-results");
@@ -224,5 +226,6 @@
     });
     emptyState?.classList.add("hidden");
     results?.classList.remove("hidden");
+  });
   });
 </script>

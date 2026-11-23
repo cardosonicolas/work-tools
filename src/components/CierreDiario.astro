@@ -29,7 +29,9 @@
   import { formatearPesos } from '../utils/currency';
   import { parsearNumero } from '../utils/number';
 
+  document.addEventListener('astro:page-load', () => {
   const form = document.querySelector<HTMLFormElement>('#cierre-form');
+  if (!form) return;
   const results = document.querySelector<HTMLElement>('#results');
   const emptyState = document.querySelector<HTMLElement>('#empty-state');
   const error = document.querySelector<HTMLElement>('#form-error');
@@ -50,4 +52,5 @@
     emptyState?.classList.add('hidden'); results?.classList.remove('hidden');
   });
   clearButton?.addEventListener('click', () => { form?.reset(); error?.classList.add('hidden'); results?.classList.add('hidden'); emptyState?.classList.remove('hidden'); form?.querySelector<HTMLInputElement>('input')?.focus(); });
+  });
 </script>
