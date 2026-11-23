@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { calcularCierreDiario, redondearACentenas } from './cierreDiario';
 import { formatearPesos } from './currency';
 
-const input = { efectivo: 400000, pedidosYa: 150000, debito: 350000, cigarrillos: 250000, cargas: 40000, horas: 110000 };
+const input = { efectivo: 400000, pedidosYaEfectivo: 0, pedidosYa: 150000, debito: 350000, rappi: 0, posnetGetnet: 0, posnetMercadoPago: 0, cuentaCorriente: 0, cigarrillos: 250000, cargas: 40000, horas: 110000 };
 
 describe('cierre diario', () => {
   it('calcula sin redondear internamente', () => {
@@ -26,5 +26,12 @@ describe('cierre diario', () => {
     expect(formatearPesos(result.recompraCigarrillos)).toBe('$217.400');
     expect(formatearPesos(result.gananciaCigarrillos)).toBe('$32.600');
     expect(formatearPesos(result.gananciaKiosco)).toBe('$72.600');
+  });
+
+  it('suma PedidosYa efectivo al efectivo, Rappi y posnets al débito y cuenta corriente al total', () => {
+    const result = calcularCierreDiario({ efectivo: 300000, pedidosYaEfectivo: 107430, pedidosYa: 162700, debito: 600000, rappi: 32600, posnetGetnet: 71590, posnetMercadoPago: 65290, cuentaCorriente: 48650, cigarrillos: 249910, cargas: 11900, horas: 170450 });
+    expect(result.total).toBe(1388260);
+    expect(result.baseCalculo).toBe(1126450);
+    expect(result.debitoDescontar).toBe(932180);
   });
 });

@@ -2,10 +2,16 @@
   <div class="panel self-start p-5 sm:p-7">
     <div class="mb-7 flex items-start justify-between gap-4"><div><p class="eyebrow">Carga de datos</p><h2 id="cierre-heading" class="mt-2 font-display text-3xl font-semibold tracking-tight text-stone-950">Cierre diario</h2></div><span class="rounded-full bg-amber-100 px-3 py-1 text-xs font-bold text-amber-900">ARS</span></div>
     <form id="cierre-form" class="space-y-5" novalidate>
+      <label class="field"><span>Fecha de la caja</span><input name="fecha" type="date" required /></label>
       <div class="grid gap-4 sm:grid-cols-2">
         <label class="field"><span>Efectivo</span><input name="efectivo" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
-        <label class="field"><span>PedidosYa</span><input name="pedidosYa" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
-        <label class="field"><span>Débito</span><input name="debito" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
+        <label class="field"><span>PedidosYa efectivo <small>suma a efectivo</small></span><input name="pedidosYaEfectivo" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
+        <label class="field"><span>PedidosYa online</span><input name="pedidosYa" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
+        <label class="field"><span>Transferencia</span><input name="debito" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
+        <label class="field"><span>Rappi <small>suma a débito</small></span><input name="rappi" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
+        <label class="field"><span>Posnet Getnet <small>suma a débito</small></span><input name="posnetGetnet" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
+        <label class="field"><span>Posnet Mercado Pago <small>suma a débito</small></span><input name="posnetMercadoPago" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
+        <label class="field"><span>Cuenta corriente <small>suma al total</small></span><input name="cuentaCorriente" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
         <label class="field"><span>Cigarrillos</span><input name="cigarrillos" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
         <label class="field"><span>Cargas</span><input name="cargas" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
         <label class="field"><span>Horas <small>monto trabajado</small></span><input name="horas" inputmode="decimal" autocomplete="off" placeholder="0" required /></label>
@@ -16,18 +22,30 @@
   </div>
   <div class="panel overflow-hidden p-5 sm:p-7" aria-live="polite">
     <div class="mb-6 flex items-end justify-between gap-4 border-b border-stone-200 pb-5"><div><p class="eyebrow">Desglose del cierre</p><h2 class="mt-2 font-display text-2xl font-semibold text-stone-950">Resultados</h2></div><p class="text-right text-xs font-semibold uppercase tracking-widest text-stone-400">Sin redondeos<br />internos</p></div>
-    <div id="empty-state" class="flex min-h-80 flex-col items-center justify-center rounded-2xl border border-dashed border-stone-300 bg-stone-50 px-6 text-center"><div class="mb-4 grid size-12 place-items-center rounded-full bg-amber-100 font-display text-xl font-bold text-amber-900">=</div><p class="font-semibold text-stone-800">Los resultados aparecen acá</p><p class="mt-1 max-w-xs text-sm leading-6 text-stone-500">Cargá los seis importes y calculá el cierre del día.</p></div>
+    <div id="empty-state" class="flex min-h-80 flex-col items-center justify-center rounded-2xl border border-dashed border-stone-300 bg-stone-50 px-6 text-center"><div class="mb-4 grid size-12 place-items-center rounded-full bg-amber-100 font-display text-xl font-bold text-amber-900">=</div><p class="font-semibold text-stone-800">Los resultados aparecen acá</p><p class="mt-1 max-w-xs text-sm leading-6 text-stone-500">Cargá los importes y calculá el cierre del día.</p></div>
     <div id="results" class="hidden">
        <div class="result-group"><p class="result-group-title">Resultados del cierre</p><dl class="grid gap-x-8 sm:grid-cols-2"><div class="result-row"><dt>T</dt><dd data-result="total"></dd></div><div class="result-row"><dt>%15</dt><dd data-result="baseCalculo"></dd></div><div class="result-row"><dt>Proveedores</dt><dd data-result="proveedores"></dd></div><div class="result-row"><dt>Gcia Ale</dt><dd data-result="gananciaAle"></dd></div><div class="result-row"><dt>(-DÉBITO)</dt><dd data-result="debitoDescontar"></dd></div><div class="result-row"><dt>Horas</dt><dd data-result="horas"></dd></div></dl><div class="result-highlight net-result mt-5"><div><p class="text-xs font-bold uppercase tracking-[0.18em] text-amber-900/70">Resultado principal</p><p class="mt-1 font-display text-xl font-semibold text-stone-950">Gcia Neta Ale</p></div><strong data-result="gananciaNetaAle"></strong></div></div>
        <div class="result-group"><p class="result-group-title">Cigarrillos / Kiosco</p><dl class="grid gap-x-8 sm:grid-cols-2"><div class="result-row"><dt>Recompra Cigarrillos</dt><dd data-result="recompraCigarrillos"></dd></div><div class="result-row"><dt>Ganancia Cigarrillos</dt><dd data-result="gananciaCigarrillos"></dd></div></dl><div class="result-highlight kiosk-result mt-5"><div><p class="text-xs font-bold uppercase tracking-[0.18em] text-amber-900/70">Resultado kiosco</p><p class="mt-1 font-display text-xl font-semibold text-stone-950">Ganancia Kiosco</p></div><strong data-result="gananciaKiosco"></strong></div></div>
+       <div class="mt-8 flex"><button class="button-primary" id="pdf-button" type="button">Generar PDF</button></div>
     </div>
   </div>
 </section>
+
+<dialog id="pdf-preview" class="pdf-preview" aria-labelledby="pdf-preview-title">
+  <div class="pdf-sheet">
+    <div class="pdf-sheet-header"><h2 id="pdf-preview-title">CIERRE DE CAJA</h2><p>DÍA: <span id="pdf-preview-fecha"></span></p></div>
+    <div id="pdf-preview-filas"></div>
+  </div>
+  <div class="mt-4 flex flex-col gap-3 sm:flex-row"><button class="button-primary" id="pdf-download" type="button">Descargar PDF</button><button class="button-secondary" id="pdf-close" type="button">Cerrar</button></div>
+</dialog>
 
 <script>
   import { calcularCierreDiario } from '../utils/cierreDiario';
   import { formatearPesos } from '../utils/currency';
   import { parsearNumero } from '../utils/number';
+  import { fechaParaInput, parsearFecha } from '../utils/fecha';
+  import { construirBloquesCierre, descargarPdfCierre, formatearFechaCierre } from '../utils/pdfCierre';
+  import type { CierreDiarioInput, CierreDiarioResult } from '../types/cierreDiario';
 
   document.addEventListener('astro:page-load', () => {
   const form = document.querySelector<HTMLFormElement>('#cierre-form');
@@ -36,21 +54,66 @@
   const emptyState = document.querySelector<HTMLElement>('#empty-state');
   const error = document.querySelector<HTMLElement>('#form-error');
   const clearButton = document.querySelector<HTMLButtonElement>('#clear-button');
+  const pdfButton = document.querySelector<HTMLButtonElement>('#pdf-button');
+  let ultimoCierre: { input: CierreDiarioInput; result: CierreDiarioResult; fecha: Date } | null = null;
+  const fechaInput = form.querySelector<HTMLInputElement>('input[name="fecha"]');
+  // defaultValue (not value) so "Limpiar" (form.reset) goes back to today.
+  if (fechaInput) fechaInput.defaultValue = fechaParaInput(new Date());
+  const mensajeImportes = error?.textContent ?? '';
+  const mostrarError = (mensaje: string) => { if (error) { error.textContent = mensaje; error.classList.remove('hidden'); } };
 
   form?.addEventListener('submit', (event) => {
     event.preventDefault();
     const data = new FormData(form);
-    const names = ['efectivo', 'pedidosYa', 'debito', 'cigarrillos', 'cargas', 'horas'] as const;
+    const names = ['efectivo', 'pedidosYaEfectivo', 'pedidosYa', 'debito', 'rappi', 'posnetGetnet', 'posnetMercadoPago', 'cuentaCorriente', 'cigarrillos', 'cargas', 'horas'] as const;
     const values = Object.fromEntries(names.map((name) => [name, parsearNumero(data.get(name))])) as Record<(typeof names)[number], number>;
-    if (names.some((name) => !Number.isFinite(values[name]) || values[name] < 0)) { error?.classList.remove('hidden'); return; }
+    const fecha = parsearFecha(data.get('fecha'));
+    if (!fecha) { mostrarError('Elegí la fecha de la caja.'); return; }
+    if (names.some((name) => !Number.isFinite(values[name]) || values[name] < 0)) { mostrarError(mensajeImportes); return; }
     error?.classList.add('hidden');
     const calculated = calcularCierreDiario(values);
+    ultimoCierre = { input: values, result: calculated, fecha };
     Object.entries(calculated).forEach(([key, value]) => {
       const target = document.querySelector<HTMLElement>(`[data-result="${key}"]`);
       if (target) target.textContent = formatearPesos(value);
     });
     emptyState?.classList.add('hidden'); results?.classList.remove('hidden');
   });
-  clearButton?.addEventListener('click', () => { form?.reset(); error?.classList.add('hidden'); results?.classList.add('hidden'); emptyState?.classList.remove('hidden'); form?.querySelector<HTMLInputElement>('input')?.focus(); });
+  const preview = document.querySelector<HTMLDialogElement>('#pdf-preview');
+  const previewFecha = document.querySelector<HTMLElement>('#pdf-preview-fecha');
+  const previewFilas = document.querySelector<HTMLElement>('#pdf-preview-filas');
+  const downloadButton = document.querySelector<HTMLButtonElement>('#pdf-download');
+
+  pdfButton?.addEventListener('click', () => {
+    if (!ultimoCierre || !preview || !previewFilas) return;
+    if (previewFecha) previewFecha.textContent = formatearFechaCierre(ultimoCierre.fecha);
+    previewFilas.replaceChildren(...construirBloquesCierre(ultimoCierre.input, ultimoCierre.result).map((bloque) => {
+      const bloqueEl = document.createElement('div');
+      bloqueEl.className = 'pdf-block';
+      bloque.forEach((fila) => {
+        const filaEl = document.createElement('div');
+        filaEl.className = fila.destacada ? 'pdf-row pdf-row-strong' : 'pdf-row';
+        const etiqueta = document.createElement('span');
+        etiqueta.textContent = fila.etiqueta;
+        const valor = document.createElement('span');
+        valor.textContent = fila.valor;
+        filaEl.append(etiqueta, valor);
+        bloqueEl.append(filaEl);
+      });
+      return bloqueEl;
+    }));
+    preview.showModal();
+  });
+  downloadButton?.addEventListener('click', async () => {
+    if (!ultimoCierre) return;
+    downloadButton.disabled = true;
+    try {
+      await descargarPdfCierre(ultimoCierre.input, ultimoCierre.result, ultimoCierre.fecha);
+    } finally {
+      downloadButton.disabled = false;
+    }
+  });
+  document.querySelector<HTMLButtonElement>('#pdf-close')?.addEventListener('click', () => preview?.close());
+  clearButton?.addEventListener('click', () => { ultimoCierre = null; form?.reset(); error?.classList.add('hidden'); results?.classList.add('hidden'); emptyState?.classList.remove('hidden'); form?.querySelector<HTMLInputElement>('input')?.focus(); });
   });
 </script>

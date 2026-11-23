@@ -5,11 +5,13 @@ const RECOMPRA_CIGARRILLOS_DIVISOR = 1.15;
 const CENTENA = 100;
 
 export function calcularCierreDiario(input: CierreDiarioInput): CierreDiarioResult {
-  const total = input.efectivo + input.pedidosYa + input.debito;
+  const efectivo = input.efectivo + input.pedidosYaEfectivo;
+  const debito = input.debito + input.rappi + input.posnetGetnet + input.posnetMercadoPago;
+  const total = efectivo + input.pedidosYa + debito + input.cuentaCorriente;
   const baseCalculo = total - (input.cigarrillos + input.cargas);
   const proveedores = baseCalculo / PROVEEDORES_DIVISOR;
   const gananciaAle = baseCalculo - proveedores;
-  const debitoDescontar = input.pedidosYa + input.debito;
+  const debitoDescontar = input.pedidosYa + debito;
   const recompraCigarrillos = redondearACentenas(input.cigarrillos / RECOMPRA_CIGARRILLOS_DIVISOR);
   const gananciaCigarrillos = input.cigarrillos - recompraCigarrillos;
 

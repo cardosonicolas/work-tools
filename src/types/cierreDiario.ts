@@ -1,7 +1,12 @@
 export interface CierreDiarioInput {
   efectivo: number;
+  pedidosYaEfectivo: number;
   pedidosYa: number;
   debito: number;
+  rappi: number;
+  posnetGetnet: number;
+  posnetMercadoPago: number;
+  cuentaCorriente: number;
   cigarrillos: number;
   cargas: number;
   horas: number;
