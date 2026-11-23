@@ -5,7 +5,6 @@ Panel personal de herramientas para cálculos de trabajo. Funciona completamente
 ## Herramientas
 
 - `/`: Cierre diario
-- `/precios`: Calculadora de precios
 
 ## Desarrollo
 
